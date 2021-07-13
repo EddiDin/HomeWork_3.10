@@ -6,12 +6,6 @@ namespace app3._10
     {
         static void Main(string[] args)
         {
-            Random randomize = new Random();
-
-            int gameNumber = randomize.Next(12, 121);
-
-            string userInput;
-
             string header = $"Новая игра.";
             string divider = "----------------------------------------------------";
             Console.SetCursorPosition((Console.WindowWidth - header.Length) / 2, Console.CursorTop);
@@ -19,13 +13,26 @@ namespace app3._10
             Console.SetCursorPosition((Console.WindowWidth - divider.Length) / 2, Console.CursorTop);
             Console.WriteLine(divider);
             Console.WriteLine("Правила:");
-            Console.WriteLine("* Загадывается число от 12 до 120, причём случайным образом. Назовём его gameNumber.");
-            Console.WriteLine("* Игроки по очереди выбирают число от одного до четырёх. Пусть это число обозначается как userTry.");
+            Console.WriteLine("* Генерируется случайное число из заданного диапазона. Назовём его gameNumber.");
+            Console.WriteLine("* Игроки по очереди выбирают число от одного до четырёх.");
             Console.WriteLine("* UserTry после каждого хода вычитается из gameNumber, а само gameNumber выводится на экран.");
             Console.WriteLine("* Если после хода игрока gameNumber равняется нулю, то походивший игрок оказывается победителем.");
             Console.SetCursorPosition((Console.WindowWidth - divider.Length) / 2, Console.CursorTop);
             Console.WriteLine(divider);
             Console.WriteLine();
+            Console.Beep();
+
+            // Переменная для получения пользовательского ввода
+            string userInput;
+
+            Console.WriteLine("Введите начало диапазона для генерации числа gameNumber:");
+            int startForGameNumber = Game.GetStartForGameNumber();
+            Console.WriteLine("Введите конец диапазона для генерации числа gameNumber:");
+            int endForGameNumber = Game.GetEndForGameNumber(startForGameNumber);
+
+
+            Random randomize = new Random();
+            int gameNumber = randomize.Next(startForGameNumber, endForGameNumber + 1);
 
             Console.WriteLine($"Загаданное число: {gameNumber}");
 
@@ -34,8 +41,8 @@ namespace app3._10
             short countPlayers = Int16.Parse(userInput);
 
 
-            short successfullyAddedPlayers = 0;
-            short computersCount = 0;
+            //short successfullyAddedPlayers = 0;
+            //short computersCount = 0;
             PlayersFactory playersFactory = new PlayersFactory();
             PlayersList playersList = new PlayersList();
 
@@ -79,14 +86,21 @@ namespace app3._10
             while (gameNumber > 0)
             {
                 IPlayer player = playersList.GetPlayer(currentPlayerIndex);
-                Console.WriteLine($"Ход игрока {player.Name}.");
-                int userTry = player.Move(gameNumber, countPlayers);
-                Console.WriteLine($"Игрок {player.Name} ввел число {userTry}.");
-                gameNumber -= userTry;
-                Console.WriteLine($"gameNumber теперь равно {gameNumber}");
-                lastPlayerName = player.Name;
-                currentPlayerIndex++;
-                if (currentPlayerIndex >= countPlayers) currentPlayerIndex = 0;
+                try
+                {
+                    Console.WriteLine($"Ход игрока {player.Name}.");
+                    int userTry = player.Move(gameNumber, countPlayers);
+                    Console.WriteLine($"Игрок {player.Name} ввел число {userTry}.");
+                    gameNumber -= userTry;
+                    Console.WriteLine($"gameNumber теперь равно {gameNumber}");
+                    lastPlayerName = player.Name;
+                    currentPlayerIndex++;
+                    if (currentPlayerIndex >= countPlayers) currentPlayerIndex = 0;
+                }
+                catch (PlayerException e)
+                {
+                    Console.WriteLine($"Ошибка. {e.Message}");
+                }
             }
 
             Console.WriteLine();
