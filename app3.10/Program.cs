@@ -14,7 +14,7 @@ namespace app3._10
             Console.WriteLine(divider);
             Console.WriteLine("Правила:");
             Console.WriteLine("* Генерируется случайное число из заданного диапазона. Назовём его gameNumber.");
-            Console.WriteLine("* Игроки по очереди выбирают число от одного до четырёх.");
+            Console.WriteLine("* Игроки по очереди выбирают число в заданном вами далее диапазоне. Назовем его userTry.");
             Console.WriteLine("* UserTry после каждого хода вычитается из gameNumber, а само gameNumber выводится на экран.");
             Console.WriteLine("* Если после хода игрока gameNumber равняется нулю, то походивший игрок оказывается победителем.");
             Console.SetCursorPosition((Console.WindowWidth - divider.Length) / 2, Console.CursorTop);
@@ -25,16 +25,25 @@ namespace app3._10
             // Переменная для получения пользовательского ввода
             string userInput;
 
+            // Генерация числа
             Console.WriteLine("Введите начало диапазона для генерации числа gameNumber:");
             int startForGameNumber = Game.GetStartForGameNumber();
             Console.WriteLine("Введите конец диапазона для генерации числа gameNumber:");
             int endForGameNumber = Game.GetEndForGameNumber(startForGameNumber);
 
+            // Инициализация диапазона для userTry
+            Console.WriteLine("Введите минимальное значение для userTry:");
+            int minUserTry = Game.GetMinUserTry();
+            Console.WriteLine("Введите максимальное значение для userTry:");
+            int maxUserTry = Game.GetMaxUserTry(minUserTry);
 
             Random randomize = new Random();
             int gameNumber = randomize.Next(startForGameNumber, endForGameNumber + 1);
 
             Console.WriteLine($"Загаданное число: {gameNumber}");
+            Console.WriteLine($"Возможный диапазон для userTry: от {minUserTry} до {maxUserTry}");
+
+            Console.WriteLine();
 
             Console.WriteLine("Введите кол-во игроков от 2-ух до 5:");
             userInput = Console.ReadLine();
