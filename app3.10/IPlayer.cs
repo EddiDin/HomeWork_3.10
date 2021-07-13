@@ -8,5 +8,6 @@ namespace app3._10
     {
         public string Name { get; set; }
         public int Move(int gameNumber, int countPlayers);
+        // предусмотреть ввод любого числа
     }
 }
