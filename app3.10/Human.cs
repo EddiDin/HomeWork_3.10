@@ -19,11 +19,11 @@ namespace app3._10
         public int Move(int gameNumber, int countPlayers, int minUserTry, int maxUserTry)
         {
             Console.WriteLine("Введите число:");
-            string userInput = Console.ReadLine();
             int userTry = -1;
 
             while (userTry == -1)
             {
+                string userInput = Console.ReadLine();
                 bool successParse = Int32.TryParse(userInput, out int parsedInput);
                 if (!successParse || parsedInput < minUserTry || parsedInput > maxUserTry)
                 {
