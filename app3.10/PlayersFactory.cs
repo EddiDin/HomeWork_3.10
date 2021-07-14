@@ -14,9 +14,9 @@ namespace app3._10
             return new Human(userInput);
         }
 
-        public IPlayer CreateComputer(int computersCount) {
+        public IPlayer CreateComputer(int computersCount, sbyte computerType) {
             string computerName = $"Компьютер__{computersCount}";
-            return new Computer(computerName);
+            return new Computer(computerName, computerType);
         }
     }
 }

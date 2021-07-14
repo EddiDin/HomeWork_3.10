@@ -7,7 +7,6 @@ namespace app3._10
     interface IPlayer
     {
         public string Name { get; set; }
-        public int Move(int gameNumber, int countPlayers);
-        // предусмотреть ввод любого числа
+        public int Move(int gameNumber, int countPlayers, int minUserTry, int maxUserTry);
     }
 }

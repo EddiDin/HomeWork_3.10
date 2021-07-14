@@ -16,12 +16,31 @@ namespace app3._10
             this.Type = 1;
         }
 
-        public int Move(int gameNumber, int countPlayers)
+        public int Move(int gameNumber, int countPlayers, int minUserTry, int maxUserTry)
         {
             Console.WriteLine("Введите число:");
             string userInput = Console.ReadLine();
+            int userTry = -1;
 
-            return Int16.Parse(userInput);
+            while (userTry == -1)
+            {
+                bool successParse = Int32.TryParse(userInput, out int parsedInput);
+                if (!successParse || parsedInput < minUserTry || parsedInput > maxUserTry)
+                {
+                    Console.WriteLine($"Необходимо ввести число из заданного диапазона (от {minUserTry} до {maxUserTry}). Попробуйте еще раз...");
+                    continue;
+                }
+
+                if (parsedInput > gameNumber)
+                {
+                    Console.WriteLine($"Введенное число больше чем gameNumber ({gameNumber}). Попробуйте еще раз...");
+                    continue;
+                }
+
+                userTry = parsedInput;
+            }
+
+            return userTry;
         }
     }
 }

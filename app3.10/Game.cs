@@ -54,39 +54,58 @@ namespace app3._10
             userInput = Console.ReadLine();
             short countPlayers = Int16.Parse(userInput);
 
-            //short successfullyAddedPlayers = 0;
-            //short computersCount = 0;
+            short successfullyAddedPlayers = 0;
+            short computersCount = 0;
             PlayersFactory playersFactory = new PlayersFactory();
             PlayersList playersList = new PlayersList();
 
-            // MOCK
-            for (int i = 0; i < countPlayers; i++)
+            // MOCK (для отладки)
+            /*for (int i = 0; i < countPlayers; i++)
             {
                 IPlayer player = playersFactory.CreateComputer(i + 1);
                 playersList.Add(player);
-            }
+            }*/
 
-            /*while (successfullyAddedPlayers < countPlayers)
+            while (successfullyAddedPlayers < countPlayers)
             {
                 Console.WriteLine();
                 Console.WriteLine($"Создание {successfullyAddedPlayers + 1} игрока:");
-                Console.WriteLine("Введите тип игрока: 1 - Живой игрок; 2 - Игрок компьютер.");
+                Console.WriteLine("Введите тип игрока: 1 - Живой игрок; 2 - Игрок компьютер (легкий/совсем тупой); 3 - Игрок компьютер (посложнее).");
                 userInput = Console.ReadLine();
-                short playerType = Int16.Parse(userInput);
-                IPlayer player;
-                if (playerType == 1)
+
+                sbyte playerType = -1;
+                while (playerType == -1)
                 {
-                    player = playersFactory.CreateHuman();
+                    bool successParse = SByte.TryParse(userInput, out sbyte parsedInput);
+                    if (!successParse || parsedInput < 1 || parsedInput > 3)
+                    {
+                        Console.WriteLine($"Необходимо ввести тип игрока (1, 2 или 3). Попробуйте еще раз...");
+                        continue;
+                    }
+
+                    playerType = parsedInput;
                 }
-                else
+
+                IPlayer player;
+
+                switch (playerType)
                 {
-                    computersCount++;
-                    player = playersFactory.CreateComputer(computersCount);
+                    case 1:
+                        player = playersFactory.CreateHuman();
+                        break;
+                    case 2:
+                    case 3:
+                        computersCount++;
+                        player = playersFactory.CreateComputer(computersCount, playerType);
+                        break;
+                    default:
+                        player = playersFactory.CreateHuman();
+                        break;
                 }
 
                 playersList.Add(player);
                 successfullyAddedPlayers++;
-            }*/
+            }
 
             Console.WriteLine();
             Console.WriteLine("Все игроки добавлены:");
@@ -98,21 +117,14 @@ namespace app3._10
             while (gameNumber > 0)
             {
                 IPlayer player = playersList.GetPlayer(currentPlayerIndex);
-                try
-                {
-                    Console.WriteLine($"Ход игрока {player.Name}.");
-                    int userTry = player.Move(gameNumber, countPlayers);
-                    Console.WriteLine($"Игрок {player.Name} ввел число {userTry}.");
-                    gameNumber -= userTry;
-                    Console.WriteLine($"gameNumber теперь равно {gameNumber}");
-                    lastPlayerName = player.Name;
-                    currentPlayerIndex++;
-                    if (currentPlayerIndex >= countPlayers) currentPlayerIndex = 0;
-                }
-                catch (PlayerException e)
-                {
-                    Console.WriteLine($"Ошибка. {e.Message}");
-                }
+                Console.WriteLine($"Ход игрока {player.Name}.");
+                int userTry = player.Move(gameNumber, countPlayers, minUserTry, maxUserTry);
+                Console.WriteLine($"Игрок {player.Name} ввел число {userTry}.");
+                gameNumber -= userTry;
+                Console.WriteLine($"gameNumber теперь равно {gameNumber}");
+                lastPlayerName = player.Name;
+                currentPlayerIndex++;
+                if (currentPlayerIndex >= countPlayers) currentPlayerIndex = 0;
             }
 
             Console.WriteLine();

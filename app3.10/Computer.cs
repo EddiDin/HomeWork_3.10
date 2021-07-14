@@ -10,22 +10,38 @@ namespace app3._10
 
         public short Type { get; set; }
 
-        public Computer(string name)
+        public Computer(string name, sbyte computerType)
         {
             this.Name = name;
-            this.Type = 2;
+            this.Type = computerType;
         }
 
-        public int Move(int gameNumber, int countPlayers)
+        public int Move(int gameNumber, int countPlayers, int minUserTry, int maxUserTry)
         {
-            if (gameNumber >= 1 && gameNumber <= 4)
+            if (this.Type == 2)
+            {
+                return this.MoveEasy(gameNumber, countPlayers, minUserTry, maxUserTry);
+            }
+
+            return this.MoveMiddle(gameNumber, countPlayers, minUserTry, maxUserTry);
+
+
+        }
+
+        private int MoveEasy(int gameNumber, int countPlayers, int minUserTry, int maxUserTry) {
+            return minUserTry;
+        }
+
+        private int MoveMiddle(int gameNumber, int countPlayers, int minUserTry, int maxUserTry)
+        {
+            if (gameNumber >= minUserTry && gameNumber <= maxUserTry)
             {
                 return gameNumber;
             }
 
             Random randomize = new Random();
 
-            return randomize.Next(1, 5);
+            return randomize.Next(minUserTry, maxUserTry + 1);
         }
     }
 }
