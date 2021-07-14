@@ -4,11 +4,19 @@ using System.Text;
 
 namespace app3._10
 {
+    /// <summary>
+    /// Класс игры
+    /// </summary>
     class Game
     {
-
+        /// <summary>
+        /// Конструктор
+        /// </summary>
         public Game() { }
 
+        /// <summary>
+        /// Метод запуска новой игры
+        /// </summary>
         public static void Start()
         {
             string header = $"Новая игра.";
@@ -36,23 +44,36 @@ namespace app3._10
             Console.WriteLine("Введите конец диапазона для генерации числа gameNumber:");
             int endForGameNumber = Game.GetEndForGameNumber(startForGameNumber);
 
-            // Инициализация диапазона для userTry
-            Console.WriteLine("Введите минимальное значение для userTry:");
-            int minUserTry = Game.GetMinUserTry();
-            Console.WriteLine("Введите максимальное значение для userTry:");
-            int maxUserTry = Game.GetMaxUserTry(minUserTry);
-
             Random randomize = new Random();
             int gameNumber = randomize.Next(startForGameNumber, endForGameNumber + 1);
-
             Console.WriteLine($"Загаданное число: {gameNumber}");
+
+            // Инициализация диапазона для userTry
+            Console.WriteLine("Введите минимальное значение для userTry:");
+            int minUserTry = Game.GetMinUserTry(gameNumber);
+            Console.WriteLine("Введите максимальное значение для userTry:");
+            int maxUserTry = Game.GetMaxUserTry(minUserTry);
+            
             Console.WriteLine($"Возможный диапазон для userTry: от {minUserTry} до {maxUserTry}");
 
             Console.WriteLine();
 
             Console.WriteLine("Введите кол-во игроков от 2-ух до 5:");
-            userInput = Console.ReadLine();
-            short countPlayers = Int16.Parse(userInput);
+
+            //short countPlayers = Int16.Parse(userInput);
+            short countPlayers = -1;
+            while (countPlayers == -1)
+            {
+                userInput = Console.ReadLine();
+                bool successParse = Int16.TryParse(userInput, out short parsedInput);
+                if (!successParse || parsedInput < 2 || parsedInput > 5)
+                {
+                    Console.WriteLine("Кол-во игроков может быть от 2-ух до 5. Попробуйте еще раз...");
+                    continue;
+                }
+
+                countPlayers = parsedInput;
+            }
 
             short successfullyAddedPlayers = 0;
             short computersCount = 0;
@@ -111,13 +132,13 @@ namespace app3._10
             Console.WriteLine("Все игроки добавлены:");
             playersList.PrintList();
 
-            // GAME
             int currentPlayerIndex = 0;
             string lastPlayerName = "";
+            bool isDeadHeat = false;
             while (gameNumber > 0)
             {
                 IPlayer player = playersList.GetPlayer(currentPlayerIndex);
-                Console.WriteLine($"Ход игрока {player.Name}.");
+                Console.WriteLine($"Ход игрока {player.Name}. gameNumber на текущий ход - {gameNumber}. Допустимый дипазон значений для хода - от {minUserTry} до {maxUserTry}");
                 int userTry = player.Move(gameNumber, countPlayers, minUserTry, maxUserTry);
                 Console.WriteLine($"Игрок {player.Name} ввел число {userTry}.");
                 gameNumber -= userTry;
@@ -125,10 +146,18 @@ namespace app3._10
                 lastPlayerName = player.Name;
                 currentPlayerIndex++;
                 if (currentPlayerIndex >= countPlayers) currentPlayerIndex = 0;
+                if (gameNumber < 0) isDeadHeat = true;
             }
 
             Console.WriteLine();
-            Console.WriteLine($"Игра окончена! Победитель {lastPlayerName}!");
+            if (!isDeadHeat)
+            {
+                Console.WriteLine($"Игра окончена! Победитель {lastPlayerName}!");
+            }
+            else
+            {
+                Console.WriteLine($"Игра окончена! Ничья!");
+            }
 
             Console.WriteLine();
             Console.WriteLine("Хотите ли вы сыграть снова? (Y - да/ N - нет)");
@@ -150,6 +179,10 @@ namespace app3._10
             }
         }
 
+        /// <summary>
+        /// Инициализация старта числового диапазона для генерации gameNumber
+        /// </summary>
+        /// <returns>Положительное число</returns>
         public static int GetStartForGameNumber()
         {
             int startForGameNumber = -1;
@@ -176,6 +209,11 @@ namespace app3._10
             return startForGameNumber;
         }
 
+        /// <summary>
+        /// Инициализация старта числового диапазона для генерации gameNumber
+        /// </summary>
+        /// <param name="startForGameNumber">Стартовое число для диапазона</param>
+        /// <returns>Положительное число</returns>
         public static int GetEndForGameNumber(int startForGameNumber)
         {
             int endForGameNumber = -1;
@@ -208,7 +246,12 @@ namespace app3._10
             return endForGameNumber;
         }
 
-        public static int GetMinUserTry()
+        /// <summary>
+        /// Инициализация минимального возможного значения для userTry
+        /// </summary>
+        /// <param name="gameNumber">Сгенерированное число gameNumber</param>
+        /// <returns>Положительное число</returns>
+        public static int GetMinUserTry(int gameNumber)
         {
             int minUserTry = -1;
 
@@ -228,12 +271,23 @@ namespace app3._10
                     continue;
                 }
 
+                if (parsedInput > gameNumber)
+                {
+                    Console.WriteLine("Минимальное значение для userTry не может быть больше gameNumber. Попробуйте еще раз...");
+                    continue;
+                }
+
                 minUserTry = parsedInput;
             }
 
             return minUserTry;
         }
 
+        /// <summary>
+        /// Инициализация максимального возможного значения для userTry
+        /// </summary>
+        /// <param name="minUserTry">Минимальное возможное значение для userTry</param>
+        /// <returns>Положительное число</returns>
         public static int GetMaxUserTry(int minUserTry)
         {
             int maxUserTry = -1;
